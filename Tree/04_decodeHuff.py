@@ -26,8 +26,6 @@ def decodeHuff(root, s):
     print(''.join(result))
 
 
-
-
 if __name__ == '__main__':
     a = Node(5, 'q')
     b = Node(2, 'q')
