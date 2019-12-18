@@ -2,7 +2,7 @@
 Created on :  11:31 AM
 Author : Xue Zhang
 """
-import copy
+from collections import deque
 
 
 class Node:
@@ -21,35 +21,30 @@ class Tree:
         self.result = []
 
     def add(self, value):
-        node = Node(value)
-        q = [self.root]
+        left, right = value
+        node_left = Node(left) if left != -1 else None
+        node_right = Node(right) if right != -1 else None
+        q = deque()
         while q:
-            cur_node = q.pop(0)
-            if cur_node.data != -1:
-                if cur_node.left is None:
-                    cur_node.left = node
-                    return
-                else:
-                    q.append(cur_node.left)
-                if cur_node.right is None:
-                    cur_node.right = node
-                    return
-                else:
-                    q.append(cur_node.right)
+            cur_node = q.popleft()
+            if cur_node:
+                cur_node.left = node_left
+                cur_node.right = node_right
+            q.append(node_left)
+            q.append(node_right)
 
-    def in_order(self, node):
-        if node is None:
-            return
-        self.in_order(node.left)
-        if node.data != -1:
-            print(node.data, end=' ')
-        self.in_order(node.right)
+def in_order(node, ret):
+    if node is None:
+        return
+    in_order(node.left, ret)
+    ret += [node.data]
+    in_order(node.right, ret)
 
 
 def swap_every_k_unit(node, level, k):
-    if node is None or (node.left.data == -1 and node.right.data == -1):
+    if node is None or (node.left is None and node.right is None):
         return
-    if (level + 1) % k == 0:
+    if level % k == 0:
         # print(level)
         node.left, node.right = node.right, node.left
     swap_every_k_unit(node.left, level + 1, k)
@@ -57,15 +52,31 @@ def swap_every_k_unit(node, level, k):
 
 
 def swap_nodes(indexes, queries):
-    new_values = [i for j in indexes for i in j]
     t = Tree()
-    for i in new_values:
-        t.add(i)
-    t.in_order(t.root)
+    q = deque()
+    q += [t.root]
+    for index in indexes:
+        left, right = index
+        node_left = Node(left) if left != -1 else None
+        node_right = Node(right) if right != -1 else None
+        cur_node = q.popleft()
+        cur_node.left = node_left
+        cur_node.right = node_right
+        if node_left:
+            q.append(node_left)
+        if node_right:
+            q.append(node_right)
+    ans = []
+    in_order(t.root, ans)
+    print(ans)
+    results = []
     for k in queries:
+        ans = []
         swap_every_k_unit(t.root, 1, k)
-        t.in_order(t.root)
-        print('')
+        in_order(t.root, ans)
+        results.append(ans)
+    return results
+
 
 
 if __name__ == '__main__':
@@ -78,6 +89,6 @@ if __name__ == '__main__':
     for _ in range(queries_count):
         queries_item = int(input())
         q1.append(queries_item)
-    swap_nodes(values, q1)
-    # print(result)
-    # print('\n'.join([' '.join(map(str, x)) for x in result]))
+    result = swap_nodes(values, q1)
+    print(result)
+    print('\n'.join([' '.join(map(str, x)) for x in result]))
