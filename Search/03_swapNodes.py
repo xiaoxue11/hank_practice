@@ -18,20 +18,6 @@ class Tree:
 
     def __init__(self):
         self.root = Node(1)
-        self.result = []
-
-    def add(self, value):
-        left, right = value
-        node_left = Node(left) if left != -1 else None
-        node_right = Node(right) if right != -1 else None
-        q = deque()
-        while q:
-            cur_node = q.popleft()
-            if cur_node:
-                cur_node.left = node_left
-                cur_node.right = node_right
-            q.append(node_left)
-            q.append(node_right)
 
 def in_order(node, ret):
     if node is None:
@@ -66,9 +52,9 @@ def swap_nodes(indexes, queries):
             q.append(node_left)
         if node_right:
             q.append(node_right)
-    ans = []
-    in_order(t.root, ans)
-    print(ans)
+    # ans = []
+    # in_order(t.root, ans)
+    # print(ans)
     results = []
     for k in queries:
         ans = []
